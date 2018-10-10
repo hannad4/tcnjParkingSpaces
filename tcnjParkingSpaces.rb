@@ -143,8 +143,8 @@ def possibleParkingLots(lotConstraintsHash, historicParkingHash, userPermission)
   puts "Note: No data printed on screen means no permissions data was found for #{userPermission} members for the time of #{time.upcase} on #{userDate}."
   possibleLots = Array.new            # creating new array (legal parking lots for user will be appended here)
   
-  case dayOfWeek                    # create a case statement that checks through the day of the week 
-  when "M", "T", "W", "Th"          # Days Monday-Thursday have same permissions for same hours, so check these times under the same case
+  case dayOfWeekCopy                    # create a case statement that checks through the day of the week 
+  when "M", "T", "W", "TH"          # Days Monday-Thursday have same permissions for same hours, so check these times under the same case
     if timeOfDay >= Time.parse("02:30 AM") && timeOfDay <= Time.parse("4:59 AM")    # Check if users time is between 2:30-5:00AM for Monday - Thursday 
       i1 = 0                        # simple dummy/counter variable (used for indexing) 
       while i1 < lotConstraintsHash.count()     # create loop that will run for length of lotConstraintsHash (will run for all parking lots in lotConstraintsHash)
@@ -248,7 +248,7 @@ def possibleParkingLots(lotConstraintsHash, historicParkingHash, userPermission)
         predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay) 
     end
         
-  when "Sa", "Su"           # Saturday and Sunday have the same permissions for same time slots. Checking that permission here. 
+  when "SA", "SU"           # Saturday and Sunday have the same permissions for same time slots. Checking that permission here. 
     if timeOfDay >= Time.parse("4:00 PM") && timeOfDay <= Time.parse("8:59 PM")
       i6 = 0
       while i6 < lotConstraintsHash.count()
