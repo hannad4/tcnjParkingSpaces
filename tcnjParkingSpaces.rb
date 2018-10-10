@@ -54,14 +54,34 @@ def predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDa
   puts "\n\nIt is predicted that the best lot for you to find parking is: "
   
   if historicalLotData.empty?       # historicalLotData will be empty if matchingData is empty after the historicParkingHash is searched
-    puts "No lots are predicted because no permissions are found for your member title at the time you entered.\nThank you for using the program, goodbye!"
-    return 0
+    puts "No lots are predicted because no permissions are found for your member title at the time you entered.\n\n"
+    puts "Would you like to restart the program? Please enter 'yes' or 'no'\n"
+    userRestart = gets.chomp
+    userRestart.upcase!           # Converting user input (to avoid case sensitive issue)
+    if userRestart == "YES" or userRestart == "Y"
+      puts "OK! The program will restart now!\n\n\n"
+      csvLocation         # Restart program depending on user input (restart as csv input, since user already knows the introduction)
+      return 0
+    else
+      puts "\nThank you for using this program. Goodbye!" 
+      return 0 
+    end        
+  return 0
   end
   puts historicalLotData[finalArray.index(finalArray.max)]["Parking Lot"]     # Print the lot with the highest number of open spots
   print "Estimated number of spots available: "
   puts finalArray.max                                       # Print number of spots available
-  puts "\nThank you for using this program. Goodbye!" 
-  return 0                                                # Return 0 to terminate program 
+  puts "Would you like to restart the program? Please enter 'yes' or 'no'\n"
+  userRestart = gets.chomp
+  userRestart.upcase!         # Converting user input (to avoid case sensitive issue)
+  if userRestart == "YES" or userRestart == "Y"
+    puts "OK! The program will restart now!\n\n\n"
+    csvLocation           # Restart program depending on user input (restart as csv input, since user already knows the introduction)
+    return 0
+  else
+    puts "\nThank you for using this program. Goodbye!" 
+    return 0                                                # Return 0 to terminate program 
+  end
 end
 
 =begin -------------------------------------------------------------------------------------------
@@ -83,7 +103,9 @@ def possibleParkingLots(lotConstraintsHash, historicParkingHash, userPermission)
   puts "\n\nWhat day of the week do you plan on parking? Enter M T W Th F Sa Su:"
   
   dayOfWeek = gets.chomp               # taking in user's day of week input, ensuring that it matches to days of week as defined in program 
-  if (dayOfWeek == "M" or dayOfWeek == "T" or dayOfWeek == "W" or dayOfWeek == "Th" or dayOfWeek == "F" or dayOfWeek == "Sa" or dayOfWeek == "Su")
+  dayOfWeekCopy = dayOfWeek         # converting user day of week to avoid case sensitive issue
+  dayOfWeekCopy.upcase!
+  if (dayOfWeekCopy == "M" or dayOfWeekCopy == "T" or dayOfWeekCopy == "W" or dayOfWeekCopy == "TH" or dayOfWeekCopy == "F" or dayOfWeekCopy == "SA" or dayOfWeekCopy == "SU")
     puts "\nWhat time do you plan on parking? Enter time as HH:MM AM or HH:MM PM"
     time = gets.chomp                  # taking in user's time input (can only do this if user entered day of week as defined in program
     begin                              # create a begin-end block that will  check time and utilize rescue (see below)
@@ -253,7 +275,9 @@ def memberTitle(lotConstraintsHash, historicParkingHash)      # Method to allow 
   puts "What type of TCNJ member are you? You may enter the following: \n"
   puts "UC, GC, RA, RS, Faculty/Staff, Visitor\n"
   userPermission = gets.chomp        # Take in user input, make sure it matches one of the user permission titles present in constraints file 
-  if (userPermission == "UC" or userPermission == "GC" or userPermission == "RA" or userPermission == "RS" or userPermission == "Faculty/Staff" or userPermission == "Visitor")
+  userPermissionCopy = userPermission # Converting user input (to avoid case sensitive issue)
+  userPermissionCopy.upcase!
+  if (userPermissionCopy == "UC" or userPermissionCopy == "GC" or userPermissionCopy == "RA" or userPermissionCopy == "RS" or userPermissionCopy == "FACULTY/STAFF" or userPermissionCopy == "VISITOR")
     possibleParkingLots(lotConstraintsHash, historicParkingHash, userPermission)  # If userPermission matches with permissions in lotConstraints, proceed to possibleParkingLots method 
     return 0
   else
@@ -308,7 +332,7 @@ end
 def csvLocation                                   # Method to allow user to input CSV file locations 
   puts "You should have two CSV files that contain data regarding the TCNJ parking lots."
   puts "You will have to enter the names of the files. If the file is located in the same spot as this program, then just type in the filename. "
-  puts "If the file is in a different directory, please copy and paste the directory instead "
+  puts "If the file is in a different directory, please copy and paste the directory instead. Please note: your input is case sensitive here. "
   puts "\nHere are two examples of what you could type in, depending on where your file is located. Be sure to replace '<filename>' with whatever your file is called\n"
   puts "Ex: <filename.csv> or <C:/Program/Files/filename.csv> "
   puts "Please enter the filename or filename directory of your lot constraints file: "
