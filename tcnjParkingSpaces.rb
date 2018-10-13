@@ -65,6 +65,7 @@ HEADING4_TIME2 = "8:59 PM"
 =begin -------------------------------------------------------------------------------------------
 //  Method: predictBestLot()
 //    Parameters: lotsConstraintsHash, historicParkingHash, possibleLots, userDate, timeofDay
+//                userPermission
 //    Pre-condition:  possibleLots is appended with 'legal' lots for user to park in. possibleLots
 //                    may be empty if no lots are found using user's constraints. User entered
 //                    appropriate information according to formatting guidelines displayed on screen.
@@ -74,10 +75,17 @@ HEADING4_TIME2 = "8:59 PM"
 //------------------------------------------------------------------------------------------------
 =end
 
-def predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay)  # Method to predict best lot for parking
+def predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay, userPermission)  # Method to predict best lot for parking
   items = possibleLots.count          # create variable items that has value of the number of lots (elements) present in possibleLots array
   if userDate.is_a? String            # checking if userDate parameter is of type String
-    userDate = Date.strptime(userDate, '%m/%d/%Y')    # if userDate is of type string, date information will be extracted from it and reassigned to itself
+    begin                              # create a begin-end block that will  check time and utilize rescue (see below)
+      userDate = Date.strptime(userDate, '%m/%d/%Y')    # if userDate is of type string, date information will be extracted from it and reassigned to itself
+    rescue ArgumentError               # if Date.strptime raises an argument error, the method possibleParkingLots will be repeated
+      puts "\nHowever, since you did not enter a proper date, no parking lots can be recommended for you\n"
+      puts "Please retype your information according to the specified format, so that the best lot can be recommended to you"
+      possibleParkingLots(lotConstraintsHash, historicParkingHash, userPermission)
+      return 0                         # return 0 to avoid complications if this method is repeated/rerun
+    end              
   end
   userDate = userDate.prev_year       # convert users date to previous year in order to compare it to historicParkingHash dates
   historicalLotData = []              # create empty array historicalLotData
@@ -85,7 +93,7 @@ def predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDa
     matchingData =  historicParkingHash.find { |i|  # for the historicParkingHash, find where parking lot matches to element in possibleLots & date matches the user's date (moved back 1 year) & time's hour matches user's time's hour
       i[CONSTRAINTS_LOT_HEADING] == possibleLots[variable] and Date.strptime(i["Date"], '%m/%d/%Y') == userDate and Time.parse(i["Time"]).hour == timeOfDay.hour }
     if matchingData == nil        # matchingData will be nil if userDate is not found in historical lots file, in which case year will be moved back by 1 year again (method will be restarted)
-      predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay)    # method will rerun until userDate is found in historical data
+      predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay, userPermission)    # method will rerun until userDate is found in historical data
       return 0          # return 0 to avoid complications when rerunning method
     end
     historicalLotData << matchingData    # if matchingData is not nil, append it to historicalLotData array
@@ -163,7 +171,7 @@ def weekDayCalculation(lotConstraintsHash, historicParkingHash, userPermission, 
         i1 = i1 + 1
       end
     end
-    predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay)  # go to predictBestLot method to predict the best lot for parking
+    predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay, userPermission)  # go to predictBestLot method to predict the best lot for parking
     return 0
 
   elsif timeOfDay >= Time.parse(HEADING2_TIME1) && timeOfDay <= Time.parse(HEADING2_TIME2)    # similar check to above, see comments
@@ -183,7 +191,7 @@ def weekDayCalculation(lotConstraintsHash, historicParkingHash, userPermission, 
         i2 = i2 + 1
       end
     end
-    predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay)  # go to predictBestLot method to predict the best lot for parking
+    predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay, userPermission)  # go to predictBestLot method to predict the best lot for parking
     return 0
 
   else timeOfDay >= Time.parse(HEADING3_TIME1) && timeOfDay <= Time.parse(HEADING3_TIME2)     # Only other time to check will be the left over time for Monday - Thursday. See comments above for method
@@ -203,7 +211,7 @@ def weekDayCalculation(lotConstraintsHash, historicParkingHash, userPermission, 
         i3 = i3 + 1
       end
     end
-    predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay)  # go to predictBestLot method to predict the best lot for parking
+    predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay, userPermission)  # go to predictBestLot method to predict the best lot for parking
     return 0
   end
 end
@@ -241,7 +249,7 @@ def fridayCalculation(lotConstraintsHash, historicParkingHash, userPermission, u
         i1 = i1 + 1
       end
     end
-    predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay)  # go to predictBestLot method to predict the best lot for parking
+    predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay, userPermission)  # go to predictBestLot method to predict the best lot for parking
     return 0
 
   else timeOfDay >= Time.parse(HEADING4_TIME1) && timeOfDay <= Time.parse(HEADING4_TIME2)      # Only other time to check will be the left over time for Friday. See comments above for method
@@ -261,7 +269,7 @@ def fridayCalculation(lotConstraintsHash, historicParkingHash, userPermission, u
         i1 = i1 + 1
       end
     end
-    predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay)  # go to predictBestLot method to predict the best lot for parking
+    predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay, userPermission)  # go to predictBestLot method to predict the best lot for parking
     return 0
   end
 end
@@ -299,7 +307,7 @@ def weekEndCalculation(lotConstraintsHash, historicParkingHash, userPermission, 
         i1 = i1 + 1
       end
     end
-    predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay)  # go to predictBestLot method to predict the best lot for parking
+    predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDate, timeOfDay, userPermission)  # go to predictBestLot method to predict the best lot for parking
     return 0
   else
     puts "No permissions are available for that time.\nDo you want to restart the program? Enter 'yes' or 'no' "   # No permissions exist for any other times
