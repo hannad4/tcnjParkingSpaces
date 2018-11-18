@@ -79,7 +79,7 @@ def predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDa
   items = possibleLots.count          # create variable items that has value of the number of lots (elements) present in possibleLots array
   if userDate.is_a? String            # checking if userDate parameter is of type String
     begin                              # create a begin-end block that will  check time and utilize rescue (see below)
-      userDate = Date.strptime(userDate, '%m/%d/%Y')    # if userDate is of type string, date information will be extracted from it and reassigned to itself
+      userDateConverted = Date.strptime(userDate, '%m/%d/%Y')    # if userDate is of type string, date information will be extracted from it and reassigned to itself
     rescue ArgumentError               # if Date.strptime raises an argument error, the method possibleParkingLots will be repeated
       puts "\nHowever, since you did not enter a proper date, no parking lots can be recommended for you\n"
       puts "Please retype your information according to the specified format, so that the best lot can be recommended to you"
@@ -87,7 +87,7 @@ def predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDa
       return 0                         # return 0 to avoid complications if this method is repeated/rerun
     end              
   end
-  userDate = userDate.prev_year       # convert users date to previous year in order to compare it to historicParkingHash dates
+  userDate = userDateConverted.prev_year       # convert users date to previous year in order to compare it to historicParkingHash dates
   historicalLotData = []              # create empty array historicalLotData
   for variable in 0..items-1          # iterate through length of possibleLots
     matchingData =  historicParkingHash.find { |i|  # for the historicParkingHash, find where parking lot matches to element in possibleLots & date matches the user's date (moved back 1 year) & time's hour matches user's time's hour
