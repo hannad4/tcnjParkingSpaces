@@ -85,7 +85,7 @@ def predictBestLot(lotConstraintsHash, historicParkingHash, possibleLots, userDa
       puts "Please retype your information according to the specified format, so that the best lot can be recommended to you"
       possibleParkingLots(lotConstraintsHash, historicParkingHash, userPermission)
       return 0                         # return 0 to avoid complications if this method is repeated/rerun
-    end              
+    end
   end
   userDate = userDateConverted.prev_year       # convert users date to previous year in order to compare it to historicParkingHash dates
   historicalLotData = []              # create empty array historicalLotData
@@ -500,4 +500,4 @@ def introduction          # Method that serves as a simple introduction to outpu
   return 0
 end
 
-introduction()            # Program begins by running introduction method 
+introduction()            # Program begins by running introduction method
